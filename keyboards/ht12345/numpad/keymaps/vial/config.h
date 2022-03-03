@@ -1,0 +1,10 @@
+
+#pragma once
+
+#define VIAL_KEYBOARD_UID {0x83, 0x53, 0xA5, 0xF9, 0x48, 0x9F, 0xA2, 0x56}
+
+#define VIAL_UNLOCK_COMBO_ROWS { 0, 4 }
+#define VIAL_UNLOCK_COMBO_COLS { 0, 3 }
+
+#define RGB_MATRIX_FRAMEBUFFER_EFFECTS
+#define RGB_MATRIX_KEYPRESSES
