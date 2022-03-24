@@ -12,7 +12,7 @@ This version uses the **STM32F303CBT6** MCU and **IS31FL3731** ISSI RGB controll
 
 Make example for this keyboard (after setting up your build environment):
 
-    make ht12345/keyboard0/p2:default
+    make ht12345/keyboard0/p2:vial
 
 
 See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) and the [make instructions](https://docs.qmk.fm/#/getting_started_make_guide) for more information. Brand new to QMK? Start with our [Complete Newbs Guide](https://docs.qmk.fm/#/newbs).
