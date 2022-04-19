@@ -25,29 +25,29 @@ uint32_t anim_timer = 0;
 
 /* Placement information for display elements */
 #    define NUMLOCK_DISPLAY_X 0
-#    define NUMLOCK_DISPLAY_Y 19
+#    define NUMLOCK_DISPLAY_Y 0
 
 #    define CAPSLOCK_DISPLAY_X 26
-#    define CAPSLOCK_DISPLAY_Y 19
+#    define CAPSLOCK_DISPLAY_Y 0
 
 #    define SCROLLLOCK_DISPLAY_X 52
-#    define SCROLLLOCK_DISPLAY_Y 19
+#    define SCROLLLOCK_DISPLAY_Y 0
 
 #    define LAYER_DISPLAY_X 0
-#    define LAYER_DISPLAY_Y 0
+#    define LAYER_DISPLAY_Y 19
 
 // WPM variables
 #    ifdef WPM_ENABLE
 char wpm_str[10];
 #        define WPM_DISPLAY_X 80
-#        define WPM_DISPLAY_Y 21
+#        define WPM_DISPLAY_Y 2
 #    endif
 
 // RGB info variables
 #    if defined RGB_MATRIX_ENABLE || defined RGBLIGHT_ENABLE
 char rgb_str[10];
 #        define RGB_INFO_DISPLAY_X 62
-#        define RGB_INFO_DISPLAY_Y 2
+#        define RGB_INFO_DISPLAY_Y 21
 #    endif
 
 // RGB light specific variables
