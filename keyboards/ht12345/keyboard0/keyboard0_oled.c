@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef OLED_ENABLE
 // Animation variables
-#    define ANIM_FRAME_DURATION 1000 / 10 // how long each frame lasts in ms
+#    define ANIM_FRAME_DURATION 1000 / 15 // how long each frame lasts in ms
 uint32_t anim_timer = 0;
 
 /* Placement information for display elements */
 #    define NUMLOCK_DISPLAY_X 0
 #    define NUMLOCK_DISPLAY_Y 19
 
-#    define CAPSLOCK_DISPLAY_X 27
+#    define CAPSLOCK_DISPLAY_X 26
 #    define CAPSLOCK_DISPLAY_Y 19
 
 #    define SCROLLLOCK_DISPLAY_X 52
@@ -71,7 +71,7 @@ uint8_t matrix_hsv_v;
 
 // Encoder information
 #    ifdef ENCODER_ENABLE
-#        define ENABLE_SLIDERS false // Encoder sliders don't work with Vial
+#        define ENABLE_SLIDERS false // Encoder sliders don't work with Vial, should be kept false
 // encoder slider placement information
 #        define ENCODER_DISPLAY_X 110
 #        define ENCODER_DISPLAY_Y 0
@@ -79,7 +79,7 @@ uint8_t matrix_hsv_v;
 #        define ENCODER_SLIDER_SPACING 3
 
 // encoder slider reset delay
-#        define ENCODER_RESET_DELAY 25
+#        define ENCODER_RESET_DELAY 2500
 uint32_t encoder_timer = 0;
 
 // encoder update variables
@@ -92,13 +92,13 @@ uint8_t encoder_slider_pos[NUMBER_OF_ENCODERS];
 void get_rgb_matrix_change(void) {
 #    ifdef RGBLIGHT_ENABLE
     if (bkl_mode != rgblight_config.mode) {
-        snprintf(rgb_str, sizeof(rgb_str) + 1, "BK M:%3d", rgblight_config.mode);
+        snprintf(rgb_str, sizeof(rgb_str) + 1, "BL M:%3d", rgblight_config.mode);
     } else if (bkl_hsv_h != rgblight_config.hue) {
-        snprintf(rgb_str, sizeof(rgb_str) + 1, "BK H:%3d", rgblight_config.hue);
+        snprintf(rgb_str, sizeof(rgb_str) + 1, "BL H:%3d", rgblight_config.hue);
     } else if (bkl_hsv_s != rgblight_config.sat) {
-        snprintf(rgb_str, sizeof(rgb_str) + 1, "BK S:%3d", rgblight_config.sat);
+        snprintf(rgb_str, sizeof(rgb_str) + 1, "BL S:%3d", rgblight_config.sat);
     } else if (bkl_hsv_v != rgblight_config.val) {
-        snprintf(rgb_str, sizeof(rgb_str) + 1, "BK V:%3d", rgblight_config.val);
+        snprintf(rgb_str, sizeof(rgb_str) + 1, "BL V:%3d", rgblight_config.val);
     }
 
     bkl_mode  = rgblight_config.mode;
@@ -182,8 +182,8 @@ void draw_rgb_matrix_change(void) {
 // draws WPM info
 #    ifdef WPM_ENABLE
 void draw_wpm(void) {
-    sprintf(wpm_str, "W:%03d", get_current_wpm());
-    write_chars_at_pixel_xy(WPM_DISPLAY_X + (ENABLE_SLIDERS ? 0 : 18), WPM_DISPLAY_Y, wpm_str, false);
+    sprintf(wpm_str, ENABLE_SLIDERS ? "W:%03d" : "WPM:%03d", get_current_wpm());
+    write_chars_at_pixel_xy(WPM_DISPLAY_X + (ENABLE_SLIDERS ? 0 : 6), WPM_DISPLAY_Y, wpm_str, false);
 }
 #    endif
 
@@ -230,7 +230,7 @@ bool oled_task_kb(void) {
 #    endif
 #    if defined ENCODER_ENABLE && ENABLE_SLIDERS
         draw_encoder_sliders();
-        if (timer_elapsed32(encoder_timer) > ANIM_FRAME_DURATION * ENCODER_RESET_DELAY) {
+        if (timer_elapsed32(encoder_timer) > ENCODER_RESET_DELAY) {
             encoder_timer = timer_read32();
             reset_encoders();
         }
