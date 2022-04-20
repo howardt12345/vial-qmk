@@ -30,6 +30,11 @@ ifeq ($(strip $(EXTRAKEY_ENABLE)), yes)
     SHARED_EP_ENABLE = yes
 endif
 
+ifeq ($(strip $(PROGRAMMABLE_BUTTON_ENABLE)), yes)
+    TMK_COMMON_DEFS += -DPROGRAMMABLE_BUTTON_ENABLE
+    SHARED_EP_ENABLE = yes
+endif
+
 ifeq ($(strip $(RAW_ENABLE)), yes)
     TMK_COMMON_DEFS += -DRAW_ENABLE
 endif

@@ -1,9 +1,12 @@
+// Copyright 2022 sekigon-gonnoc
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <stdio.h>
 
 #include "ws2812.h"
 #include "ws2812.pio.h"
 
+#include "atomic_util.h"
 #include "pio_manager.h"
 #include "boards/pico_boards.h"
 
@@ -40,7 +43,7 @@ void ws2812_setleds(LED_TYPE *ledarray, uint16_t number_of_leds) {
         }
     }
 
-    printf("led %d %d %d\n", ledarray[0].r, ledarray[0].g, ledarray[0].b);
+    __interrupt_disable__();
 
     for (int i = 0; i < number_of_leds; i++) {
         pio_sm_put_blocking(pio, sm,
@@ -48,4 +51,6 @@ void ws2812_setleds(LED_TYPE *ledarray, uint16_t number_of_leds) {
                                 (((uint32_t)ledarray[i].g) << 24) |
                                 ((uint32_t)ledarray[i].b << 8));
     }
+
+    __interrupt_enable__(NULL);
 }

@@ -1,3 +1,19 @@
+/* Copyright 2021 sekigon-gonnoc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "iusb.h"
 #include "raw_hid.h"
 
@@ -9,6 +25,7 @@
 #include "device/usbd.h"
 #include "hid_device.h"
 #include "class/midi/midi_device.h"
+#include "device/dcd.h"
 
 /* declarations */
 uint8_t keyboard_leds(void) {
@@ -17,6 +34,13 @@ uint8_t keyboard_leds(void) {
 }
 
 void send_keyboard(report_keyboard_t *report) {
+    if (tud_suspended()) {
+        tud_remote_wakeup();
+        busy_wait_ms(15);
+        dcd_event_bus_signal(0, DCD_EVENT_RESUME, true);
+        return;
+    }
+
     while (!tud_hid_n_ready(ITF_NUM_HID_KEYBOARD)) {
         tud_task();
         if (!tud_ready()) {
@@ -28,6 +52,13 @@ void send_keyboard(report_keyboard_t *report) {
 }
 
 void send_mouse(report_mouse_t *report) {
+    if (tud_suspended()) {
+        tud_remote_wakeup();
+        busy_wait_ms(15);
+        dcd_event_bus_signal(0, DCD_EVENT_RESUME, true);
+        return;
+    }
+
     while (!tud_hid_n_ready(ITF_NUM_HID_MOUSE)) {
         tud_task();
         if (!tud_ready()) {
