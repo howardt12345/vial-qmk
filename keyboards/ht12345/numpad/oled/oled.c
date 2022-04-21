@@ -17,10 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "numpad.h"
 #include "oled_functions.c"
+#include <stdio.h>
 
 #ifdef OLED_ENABLE
 // Animation variables
-#    define ANIM_FRAME_DURATION 1000 / 15 // how long each frame lasts in ms
+#    define ANIM_FRAME_DURATION 1000 / 1 // how long each frame lasts in ms
 uint32_t anim_timer = 0;
 
 /* Placement information for display elements */
@@ -34,13 +35,13 @@ uint32_t anim_timer = 0;
 #    define SCROLLLOCK_DISPLAY_Y 0
 
 #    define LAYER_DISPLAY_X 0
-#    define LAYER_DISPLAY_Y 20
+#    define LAYER_DISPLAY_Y 0
 
 // RGB info variables
 #    if defined RGB_MATRIX_ENABLE || defined RGBLIGHT_ENABLE
 char rgb_str[10];
-#        define RGB_INFO_DISPLAY_X 62
-#        define RGB_INFO_DISPLAY_Y 22
+#        define RGB_INFO_DISPLAY_X 80
+#        define RGB_INFO_DISPLAY_Y 2
 #    endif
 
 // RGB light specific variables
@@ -138,7 +139,6 @@ void draw_rgb_matrix_change(void) {
 }
 #    endif
 
-
 bool oled_task_kb(void) {
     // Animation loop
     if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
@@ -147,7 +147,6 @@ bool oled_task_kb(void) {
         draw_keyboard_layers();
         // draw dividing line
         draw_line_h(0, 15, 128, true);
-        draw_keyboard_locks();
 
 #    if defined RGBLIGHT_ENABLE || defined RGB_MATRIX_ENABLE
         draw_rgb_matrix_change();
