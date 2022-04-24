@@ -20,9 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 
 #ifdef OLED_ENABLE
-// Animation variables
-#    define ANIM_FRAME_DURATION 1000 / 1 // how long each frame lasts in ms
-uint32_t anim_timer = 0;
 
 /* Placement information for display elements */
 #    define NUMLOCK_DISPLAY_X 0
@@ -36,10 +33,12 @@ uint32_t anim_timer = 0;
 
 #    define LAYER_DISPLAY_X 0
 #    define LAYER_DISPLAY_Y 0
+uint8_t prev_layer = 255;
 
 // RGB info variables
 #    if defined RGB_MATRIX_ENABLE || defined RGBLIGHT_ENABLE
 char rgb_str[10];
+bool rgb_on;
 #        define RGB_INFO_DISPLAY_X 80
 #        define RGB_INFO_DISPLAY_Y 2
 #    endif
@@ -62,6 +61,27 @@ uint8_t matrix_hsv_h;
 uint8_t matrix_hsv_s;
 uint8_t matrix_hsv_v;
 #    endif
+
+bool rgb_has_changed(void) {
+#    ifdef RGBLIGHT_ENABLE
+    if (bkl_mode != rgblight_config.mode || bkl_hsv_h != rgblight_config.hue || bkl_hsv_s != rgblight_config.sat || bkl_hsv_v != rgblight_config.val) {
+        return true;
+    }
+#    endif
+
+#    ifdef RGB_MATRIX_ENABLE
+    if (matrix_mode != rgb_matrix_config.mode || matrix_hsv_h != rgb_matrix_config.hsv.h || matrix_hsv_s != rgb_matrix_config.hsv.s || matrix_hsv_v != rgb_matrix_config.hsv.v) {
+        return true;
+    }
+#    endif
+
+    if(rgb_on != (rgblight_is_enabled() || rgb_matrix_config.enable)) {
+        rgb_on = rgblight_is_enabled() || rgb_matrix_config.enable;
+        return true;
+    }
+
+    return false;
+}
 
 // gets the text of the last changed RGB setting
 void get_rgb_matrix_change(void) {
@@ -100,10 +120,15 @@ void get_rgb_matrix_change(void) {
 #    endif
 }
 
+bool layer_has_changed(void) {
+    uint8_t current_layer = get_highest_layer(layer_state);
+    return prev_layer != current_layer;
+}
+
 // draws indicators for the current keyboard layer
 void draw_keyboard_layers(void) {
-    uint8_t highest_layer;
-    highest_layer = get_highest_layer(layer_state);
+    uint8_t highest_layer = get_highest_layer(layer_state);
+    prev_layer = highest_layer;
     if (highest_layer < 4) {
         draw_rect_filled_soft(LAYER_DISPLAY_X + highest_layer * 12, LAYER_DISPLAY_Y, 11, 11, true);
     } else {
@@ -139,18 +164,25 @@ void draw_rgb_matrix_change(void) {
 }
 #    endif
 
-bool oled_task_kb(void) {
-    // Animation loop
-    if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
-        anim_timer = timer_read32();
-        oled_clear();
-        draw_keyboard_layers();
-        // draw dividing line
-        draw_line_h(0, 15, 128, true);
+bool should_redraw(void) {
+    return layer_has_changed() || rgb_has_changed();
+}
+
+// OLED draw function
+void redraw_oled(void) {
+    oled_clear();
+    draw_keyboard_layers();
+    // draw dividing line
+    draw_line_h(0, 15, 128, true);
 
 #    if defined RGBLIGHT_ENABLE || defined RGB_MATRIX_ENABLE
-        draw_rgb_matrix_change();
+    draw_rgb_matrix_change();
 #    endif
+}
+
+bool oled_task_kb(void) {
+    if(should_redraw()) {
+        redraw_oled();
     }
 
     return false;
